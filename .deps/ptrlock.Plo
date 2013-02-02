@@ -1,0 +1,1 @@
+ptrlock.lo: config/posix/ptrlock.c

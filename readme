@@ -1,0 +1,5 @@
+This directory is extracted from gcc-4.4.4/libgomp
+The purpose is to have a self-contained libgomp which can be built.
+
+
+Liao 7/16/2010
