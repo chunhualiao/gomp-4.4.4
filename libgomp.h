@@ -355,6 +355,9 @@ struct gomp_thread_pool
   gomp_barrier_t threads_dock;
 };
 
+/* Liao, 3/18/2013, expose this function so compilers can choose to free a thread pool and release its threads */
+void gomp_free_thread (void*);
+
 /* ... and here is that TLS data.  */
 
 #ifdef HAVE_TLS

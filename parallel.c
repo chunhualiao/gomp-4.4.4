@@ -127,9 +127,9 @@ GOMP_parallel_end (void)
 	}
     }
   gomp_team_end ();
+  gomp_free_thread((void*)(0));
 }
 
-
 /* The public OpenMP API for thread and team related inquiries.  */
 
 int

@@ -208,8 +208,12 @@ gomp_free_pool_helper (void *thread_pool)
 
 /* Free a thread pool and release its threads. */
 
+/* 
 static void
 gomp_free_thread (void *arg __attribute__((unused)))
+*/
+void
+gomp_free_thread (void *arg __attribute__((unused))) 
 {
   struct gomp_thread *thr = gomp_thread ();
   struct gomp_thread_pool *pool = thr->thread_pool;
