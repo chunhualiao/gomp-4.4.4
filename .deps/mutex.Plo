@@ -1,1 +1,0 @@
-mutex.lo: config/posix/mutex.c

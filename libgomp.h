@@ -41,7 +41,7 @@
 #include <stdbool.h>
 
 #ifdef HAVE_ATTRIBUTE_VISIBILITY
-# pragma GCC visibility push(hidden)
+//# pragma GCC visibility push(hidden)
 #endif
 
 #include "sem.h"
@@ -503,7 +503,7 @@ gomp_work_share_init_done (void)
 }
 
 #ifdef HAVE_ATTRIBUTE_VISIBILITY
-# pragma GCC visibility pop
+//# pragma GCC visibility pop
 #endif
 
 /* Now that we're back to default visibility, include the globals.  */

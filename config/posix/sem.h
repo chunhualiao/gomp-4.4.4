@@ -34,13 +34,13 @@
 #define GOMP_SEM_H 1
 
 #ifdef HAVE_ATTRIBUTE_VISIBILITY
-# pragma GCC visibility push(default)
+//# pragma GCC visibility push(default)
 #endif
 
 #include <semaphore.h>
 
 #ifdef HAVE_ATTRIBUTE_VISIBILITY
-# pragma GCC visibility pop
+//# pragma GCC visibility pop
 #endif
 
 #ifdef HAVE_BROKEN_POSIX_SEMAPHORES

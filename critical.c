@@ -84,7 +84,7 @@ GOMP_critical_name_start (void **pptr)
 	    {
 	      plock = gomp_malloc (sizeof (gomp_mutex_t));
 	      gomp_mutex_init (plock);
-	      __sync_synchronize ();
+//	      __sync_synchronize ();
 	      *pptr = plock;
 	    }
 	  gomp_mutex_unlock (&create_lock_lock);

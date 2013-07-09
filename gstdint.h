@@ -1,4 +1,4 @@
-/* generated for  gcc (GCC) 4.4.1 */
+/* generated for  gcc (GCC) 4.1.2 20080704 (Red Hat 4.1.2-54) */
 
 #ifndef GCC_GENERATED_STDINT_H
 #define GCC_GENERATED_STDINT_H 1
