@@ -26,7 +26,7 @@
 
 #include "libgomp.h"
 #include <limits.h>
-
+#include <stdio.h>
 
 /* Determine the number of threads to be launched for a PARALLEL construct.
    This algorithm is explicitly described in OpenMP 3.0 section 2.4.1.
@@ -111,10 +111,22 @@ GOMP_parallel_start (void (*fn) (void *), void *data, unsigned num_threads)
 void
 GOMP_parallel_end (void)
 {
+  struct gomp_thread *thr = gomp_thread ();
+  struct gomp_team *team = thr->ts.team;
+  struct team_threads_info *team_thrs = NULL;
+  if( team )
+    {
+      team_thrs = gomp_malloc( sizeof(unsigned) + (team->nthreads * sizeof(pthread_t)) );
+      team_thrs->nthreads = team->nthreads;
+      team_thrs->threads_are_joinable = team->threads_are_joinable;
+      int i;
+      for( i = 1; i<team->nthreads; i++ )
+      {
+        team_thrs->threads[i] = team->threads[i];
+      }
+    }
   if (__builtin_expect (gomp_thread_limit_var != ULONG_MAX, 0))
     {
-      struct gomp_thread *thr = gomp_thread ();
-      struct gomp_team *team = thr->ts.team;
       if (team && team->nthreads > 1)
 	{
 #ifdef HAVE_SYNC_BUILTINS
@@ -127,7 +139,7 @@ GOMP_parallel_end (void)
 	}
     }
   gomp_team_end ();
-  gomp_free_thread((void*)(0));
+  gomp_free_thread (/*(void*)(0)*/ team_thrs);
 }
 
 /* The public OpenMP API for thread and team related inquiries.  */

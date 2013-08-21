@@ -26,6 +26,8 @@
    creation and termination.  */
 
 #include "libgomp.h"
+#include <errno.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -140,7 +142,7 @@ gomp_new_team (unsigned nthreads)
   int i;
 
   size = sizeof (*team) + nthreads * (sizeof (team->ordered_release[0])
-				      + sizeof (team->implicit_task[0]));
+				      + sizeof (team->implicit_task[0]) * 2 );
   team = gomp_malloc (size);
 
   team->work_share_chunk = 8;
@@ -163,6 +165,8 @@ gomp_new_team (unsigned nthreads)
   gomp_sem_init (&team->master_release, 0);
   team->ordered_release = (void *) &team->implicit_task[nthreads];
   team->ordered_release[0] = &team->master_release;
+
+  team->threads = (void *) &team->implicit_task[nthreads*2];
 
   gomp_mutex_init (&team->task_lock);
   team->task_queue = NULL;
@@ -236,6 +240,22 @@ gomp_free_thread (void *arg __attribute__((unused)))
 	  /* Now it is safe to destroy the barrier and free the pool.  */
 	  gomp_barrier_destroy (&pool->threads_dock);
 	}
+
+
+  /* Join all threads of the team before */ 
+  int i;
+  void *status;
+  struct team_threads_info *team_thrs = ( struct team_threads_info* ) arg;
+  if( team_thrs->threads_are_joinable )
+  {
+    for (i=1; i<team_thrs->nthreads; ++i)
+    {
+        int err = pthread_join( team_thrs->threads[i], &status );
+        if (err != 0)
+        gomp_fatal ("Thread %d join failed: %s", i, strerror (err));
+    }
+  }
+
       free (pool->threads);
       if (pool->last_team)
 	free_team (pool->last_team);
@@ -386,12 +406,18 @@ gomp_team_start (void (*fn) (void *), void *data, unsigned nthreads,
   attr = &gomp_thread_attr;
   if (__builtin_expect (gomp_cpu_affinity != NULL, 0))
     {
+      team->threads_are_joinable = false;
       size_t stacksize;
       pthread_attr_init (&thread_attr);
       pthread_attr_setdetachstate (&thread_attr, PTHREAD_CREATE_DETACHED);
       if (! pthread_attr_getstacksize (&gomp_thread_attr, &stacksize))
 	pthread_attr_setstacksize (&thread_attr, stacksize);
       attr = &thread_attr;
+    }
+  else
+    {
+      team->threads_are_joinable = true;
+      pthread_attr_setdetachstate (attr, PTHREAD_CREATE_JOINABLE);
     }
 
   start_data = gomp_alloca (sizeof (struct gomp_thread_start_data)
@@ -400,7 +426,6 @@ gomp_team_start (void (*fn) (void *), void *data, unsigned nthreads,
   /* Launch new threads.  */
   for (; i < nthreads; ++i, ++start_data)
     {
-      pthread_t pt;
       int err;
 
       start_data->fn = fn;
@@ -423,7 +448,7 @@ gomp_team_start (void (*fn) (void *), void *data, unsigned nthreads,
       if (gomp_cpu_affinity != NULL)
 	gomp_init_thread_affinity (attr);
 
-      err = pthread_create (&pt, attr, gomp_thread_start, start_data);
+      err = pthread_create (&team->threads[i], attr, gomp_thread_start, start_data);
       if (err != 0)
 	gomp_fatal ("Thread creation failed: %s", strerror (err));
     }
