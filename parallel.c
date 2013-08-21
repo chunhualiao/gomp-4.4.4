@@ -26,7 +26,7 @@
 
 #include "libgomp.h"
 #include <limits.h>
-#include <stdio.h>
+
 
 /* Determine the number of threads to be launched for a PARALLEL construct.
    This algorithm is explicitly described in OpenMP 3.0 section 2.4.1.
