@@ -28,7 +28,7 @@
    POSIX pthread_barrier_t won't work.  */
 
 #include "libgomp.h"
-
+#include <stdio.h>
 
 void
 gomp_barrier_init (gomp_barrier_t *bar, unsigned count)
@@ -113,6 +113,7 @@ gomp_team_barrier_wait_end (gomp_barrier_t *bar, gomp_barrier_state_t state)
 {
   unsigned int n;
 
+//  printf ("debug posix barrier implementation\n");
   if (state & 1)
     {
       n = --bar->arrived;

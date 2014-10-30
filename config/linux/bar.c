@@ -33,6 +33,7 @@
 void
 gomp_barrier_wait_end (gomp_barrier_t *bar, gomp_barrier_state_t state)
 {
+//  printf ("debug.. Linux version gomp_barrier\n");
   if (__builtin_expect ((state & 1) != 0, 0))
     {
       /* Next time we'll be awaiting TOTAL threads again.  */

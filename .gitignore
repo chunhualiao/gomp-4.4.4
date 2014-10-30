@@ -1,0 +1,10 @@
+.deps
+.libs
+config.h
+config.log
+config.status
+gstdint.h
+libgomp.spec
+libtool
+*.o
+*.lo
