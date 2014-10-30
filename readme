@@ -1,5 +1,26 @@
 This directory is extracted from gcc-4.4.4/libgomp
 The purpose is to have a self-contained libgomp which can be built.
 
+1. How to build libgomp
+---------------------------------------
+To build libgomp.a, type
+./configure
+make
 
-Liao 7/16/2010
+libgomp.a will be generated under 
+ls -l .libs/libgomp.a
+
+libgomp.a under the current directory is a fake one for libtool.
+
+2. How to use a specific libgomp
+---------------------------------------
+By default, gcc will use its own libgomp installed systemwide.
+If you want to use a specific version of libgomp with your customization,
+you have to explicitly link the right libgomp.
+
+For example, to compile testsuite/libgomp.c/hello.c 
+  cd testsuite/libgomp.c
+  gcc -fopenmp -c hello.c # -c means compile only
+  # Now you can link .o with libgomp.a, plus pthread
+  gcc -o hello.out hello.o ../../.libs/libgomp.a  -lpthread
+
